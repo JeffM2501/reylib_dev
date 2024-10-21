@@ -1,10 +1,18 @@
 #pragma once
 
-// platform abstract headers
+#include "reylib_app.h"
+#include "reylib_geometry_types.h"
+
+ // SDL Platform data
+
+#include "sdl3/sdl.h"
+
+#define SDL_MAIN_HANDLED
+#include "sdl3/SDL_main.h"
 
 #define MAX_WINDOW_NAME_SIZE 256
 
-typedef struct rlPlatformConfig
+typedef struct RLPlatformConfig
 {
     FrameCallback Init;
     FrameCallback Update;
@@ -17,13 +25,30 @@ typedef struct rlPlatformConfig
 
     uint32_t Width;
     uint32_t Height;
-}rlPlatformConfig;
+}RLPlatformConfig;
+extern RLPlatformConfig rlPlatformConfig;
 
-void rlPlatformInitApp(rlPlatformConfig* config);
-void rlPlatformShutdown();
-void rlPlatformBeginFrame();
-void rlPlatformEndFrame();
+typedef struct RLPlaformWindowState
+{
+    SDL_Window* GameWindow;
+    SDL_Renderer* GameRenderer;
 
-// TODO add other platforms
+    RLPoint2F MousePosition;
+    RLPoint2F MouseDelta;
 
-#include "platforms/sdl/reylib_plaform_sdl3.c"
+    RLPoint2F WindowPosition;
+    RLPoint2F WindowSize;
+
+    bool WasWindowResized;
+    bool WasWindowMoved;
+
+}RLPlaformWindowState;
+extern RLPlaformWindowState rlPlatformWindowState;
+
+SDL_AppResult sdlInit(void** appstate, int argc, char* argv[]);
+
+SDL_AppResult sdlIterate(void* appstate);
+
+SDL_AppResult sdlEvent(void* appstate, SDL_Event* event);
+
+void sdlShutdown(void* appstate, SDL_AppResult result);

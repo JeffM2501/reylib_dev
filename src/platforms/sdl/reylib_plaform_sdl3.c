@@ -1,41 +1,49 @@
 #include "reylib.h"
 #include "reylib_core_data.h"
 
-#include "sdl3/sdl.h"
-
-#define SDL_MAIN_HANDLED
-#include "sdl3/SDL_main.h"
-
-static SDL_Window* GameWindow = NULL;
-static rlPlatformConfig* PlatformConfig = NULL;
+#include "platforms/reylib_platform.h"
 
 SDL_AppResult sdlInit(void** appstate, int argc, char* argv[])
 {
-    if (PlatformConfig == NULL)
+    rlPlatformWindowState.GameWindow = SDL_CreateWindow(rlPlatformConfig.WindowName, rlPlatformConfig.Width, rlPlatformConfig.Height, SDL_WINDOW_OPENGL);
+
+    if (!rlPlatformWindowState.GameWindow)
         return SDL_APP_FAILURE;
 
-    GameWindow = SDL_CreateWindow(PlatformConfig->WindowName, PlatformConfig->Width, PlatformConfig->Height, SDL_WINDOW_OPENGL);
+    rlPlatformWindowState.GameRenderer = SDL_CreateRenderer(rlPlatformWindowState.GameWindow, NULL);
 
-    if (PlatformConfig->Init && !PlatformConfig->Init())
+    if (!rlPlatformWindowState.GameRenderer)
+        return SDL_APP_FAILURE;
+
+    if (rlPlatformConfig.Init && rlPlatformConfig.Init())
         return SDL_APP_SUCCESS;
+
+    SDL_GetMouseState(&rlPlatformWindowState.MousePosition.X, &rlPlatformWindowState.MousePosition.Y);
+
+    rlCoreData.LastFrameTime = rlGetTime();
+    rlCoreData.DeltaTime = 0;
 
     return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult sdlIterate(void* appstate)
 {
-    if (PlatformConfig == NULL || PlatformConfig->Render == NULL)
+    if (rlPlatformConfig.Render == NULL)
         return SDL_APP_FAILURE;
+
+    double now = rlGetTime();
+    rlCoreData.DeltaTime = (float)(now - rlCoreData.LastFrameTime);
+    rlCoreData.LastFrameTime = now;
 
     bool exit = false;
 
-    if (!PlatformConfig->Update)
-        exit = PlatformConfig->Update();
+    if (rlPlatformConfig.Update)
+        exit = rlPlatformConfig.Update();
     
     if (!exit)
     {
         rlBeginFrame();
-        exit = PlatformConfig->Render();
+        exit = rlPlatformConfig.Render();
         rlEndFrame();
     }
 
@@ -50,6 +58,25 @@ SDL_AppResult sdlEvent(void* appstate, SDL_Event* event)
         rlCoreData.WantClose = true;
         break;
 
+    case SDL_EVENT_MOUSE_MOTION:
+        rlPlatformWindowState.MousePosition.X = event->motion.x;
+        rlPlatformWindowState.MousePosition.Y = event->motion.y;
+        rlPlatformWindowState.MouseDelta.X = event->motion.xrel;
+        rlPlatformWindowState.MouseDelta.Y = event->motion.yrel;
+        break;
+
+    case SDL_EVENT_WINDOW_RESIZED:
+        rlPlatformWindowState.WindowSize.X = (float)event->window.data1;
+        rlPlatformWindowState.WindowSize.Y = (float)event->window.data2;
+        rlPlatformWindowState.WasWindowResized = true;
+        break;
+
+    case SDL_EVENT_WINDOW_MOVED:
+        rlPlatformWindowState.WindowPosition.X = (float)event->window.data1;
+        rlPlatformWindowState.WindowPosition.Y = (float)event->window.data2;
+        rlPlatformWindowState.WasWindowMoved = true;
+        break;
+
     default:
         break;
     }
@@ -59,48 +86,8 @@ SDL_AppResult sdlEvent(void* appstate, SDL_Event* event)
 
 void sdlShutdown(void* appstate, SDL_AppResult result)
 {
-    if (PlatformConfig && PlatformConfig->Shutdown)
+    if (rlPlatformConfig.Shutdown)
     {
-        PlatformConfig->Shutdown();
-    }
-}
-
-void rlPlatformInitApp(rlPlatformConfig* config)
-{
-    PlatformConfig = config;
-
-    SDL_Init(SDL_INIT_VIDEO);
-
-    if (PlatformConfig->Render)
-    {
-        SDL_EnterAppMainCallbacks(0, NULL, sdlInit, sdlIterate, sdlEvent, sdlShutdown);
-        return;
-    }
-
-    sdlInit(NULL, 0, NULL);
-}
-
-void rlPlatformShutdown()
-{
-    SDL_DestroyWindow(GameWindow);
-    GameWindow = NULL;
-}
-
-void rlPlatformBeginFrame()
-{
-
-}
-
-void rlPlatformEndFrame()
-{
-    SDL_GL_SwapWindow(GameWindow);
-
-    if (PlatformConfig->Render)
-        return;
-
-    SDL_Event event;
-    while (SDL_PollEvent(&event))
-    {
-        sdlEvent(NULL, &event);
+        rlPlatformConfig.Shutdown();
     }
 }

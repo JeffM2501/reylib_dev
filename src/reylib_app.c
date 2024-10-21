@@ -2,9 +2,11 @@
 #include "reylib_core_data.h"
 #include "platforms/reylib_platform.h"
 
-static RLCoreData rlCoreData;
+RLCoreData rlCoreData;
 
-static rlPlatformConfig platformConfig = { 0 };
+RLPlatformConfig rlPlatformConfig = { 0 };
+RLPlaformWindowState rlPlatformWindowState = { 0 };
+
 
 static void rlInitCoreData()
 {
@@ -15,17 +17,26 @@ void rlInitApp(uint32_t width, uint32_t height, const char* name, uint32_t flags
 {
     rlInitCoreData();
 
-    platformConfig.Width = width;
-    platformConfig.Height = height;
-    platformConfig.Init = initCallback;
-    platformConfig.Update = updateCallback;
-    platformConfig.Render = renderCallback;
-    platformConfig.Shutdown = shutdownCallback;
-    platformConfig.Flags = flags;
+    rlPlatformConfig.Width = width;
+    rlPlatformConfig.Height = height;
+    rlPlatformConfig.Init = initCallback;
+    rlPlatformConfig.Update = updateCallback;
+    rlPlatformConfig.Render = renderCallback;
+    rlPlatformConfig.Shutdown = shutdownCallback;
+    rlPlatformConfig.Flags = flags;
 
-    strcpy(platformConfig.WindowName, name);
+    strcpy(rlPlatformConfig.WindowName, name);
 
-    rlPlatformInitApp(&platformConfig);
+
+    SDL_Init(SDL_INIT_VIDEO);
+
+    if (rlPlatformConfig.Render)
+    {
+        SDL_EnterAppMainCallbacks(0, NULL, sdlInit, sdlIterate, sdlEvent, sdlShutdown);
+        return;
+    }
+
+    sdlInit(NULL, 0, NULL);
 }
 
 void rlInitAppSimple(uint32_t width, uint32_t height, const char* name, uint32_t flags)
@@ -35,26 +46,64 @@ void rlInitAppSimple(uint32_t width, uint32_t height, const char* name, uint32_t
 
 void rlShutdown()
 {
-    rlPlatformShutdown();
+    if (rlPlatformWindowState.GameRenderer)
+        SDL_DestroyRenderer(rlPlatformWindowState.GameRenderer);
+    if (rlPlatformWindowState.GameWindow)
+        SDL_DestroyWindow(rlPlatformWindowState.GameWindow);
+
+    rlPlatformWindowState.GameWindow = NULL;
+    rlPlatformWindowState.GameRenderer = NULL;
 }
 
 void rlBeginFrame()
 {
-    rlPlatformBeginFrame();
-
     // setup default projection matrix
+}
+
+void ClearEndOffFrameData()
+{
+    rlCoreData.WantClose = false;
+
+    rlPlatformWindowState.WasWindowMoved = false;
+    rlPlatformWindowState.WasWindowResized = false;
+
+    rlPlatformWindowState.MouseDelta.X = 0;
+    rlPlatformWindowState.MouseDelta.Y = 0;
 }
 
 void rlEndFrame()
 {
-    rlCoreData.WantClose = false;
+    ClearEndOffFrameData();
 
-    rlPlatformEndFrame();
+    SDL_RenderPresent(rlPlatformWindowState.GameRenderer);
+
+    if (rlPlatformConfig.Render)
+        return;
+
+    SDL_Event event;
+    while (SDL_PollEvent(&event))
+    {
+        sdlEvent(NULL, &event);
+    }
     
     // do end frame work (like waiting)
+
+    double now = rlGetTime();
+    rlCoreData.DeltaTime = (float)(now - rlCoreData.LastFrameTime);
+    rlCoreData.LastFrameTime = now;
 }
 
 bool rlWantExit()
 {
     return rlCoreData.WantClose;
+}
+
+double rlGetTime()
+{
+    return SDL_GetTicks() / 1000.0;
+}
+
+float rlGetFrameTime()
+{
+    return rlCoreData.DeltaTime;
 }
