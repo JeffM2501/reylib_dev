@@ -1,7 +1,7 @@
 #pragma once
 
 #include "reylib_lib_utils.h"
-#include "reylib_geometry_types.h"''
+#include "reylib_geometry_types.h"
 
 #if defined(__cplusplus)
 extern "C" {            // Prevents name mangling of functions

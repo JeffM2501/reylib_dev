@@ -21,6 +21,11 @@ typedef struct RLColor
 #endif
 }RLColor;
 
+RL_API inline uint32_t rlColorToInt(RLColor color)
+{
+    return (((uint32_t)color.R << 24) | ((uint32_t)color.G << 16) | ((uint32_t)color.B << 8) | (uint32_t)color.A);
+}
+
 
 // Some Basic Colors
 // NOTE: Custom raylib color palette for amazing visuals on WHITE background

@@ -5,9 +5,20 @@
 
 RLPoint2F Position = { 0 };
 
+RLImage Image = { 0 };
+RLTexture Texture = { 0 };
+RLTexture Parots = { 0 };
+
 bool Init(void)
 {
     Position = (RLPoint2F){ 100,100 };
+
+    Image = rlLoadImageFile("../../../../examples/basic/resources/test.png");
+    
+    Texture = rlLoadTextureFromImage(Image);
+
+    Parots = rlLoadTexture("../../../../examples/basic/resources/parrots.png");
+
     return false;
 }
 
@@ -25,7 +36,12 @@ bool Render(void)
 {
     rlClearBackgroud(DARKBLUE);
 
-    rlDrawRectangleAtPosition(Position, (RLRectangle2F){ 0, 0, 32, 32 }, RED);
+    rlDrawTexture(Parots, Parots.Bounds, (RLRectangle2F){ 150, 150, rlGetWindowSize().X - 150, rlGetWindowSize().Y - 150 }, WHITE);
+
+    rlDrawRectangleAtPosition((RLRectangle2F){ 0, 0, 32, 32 }, Position , RED);
+
+    rlDrawTextureAtPosition(Texture, RLPoint2FZeros, WHITE);
+
     return false;
 }
 
@@ -40,11 +56,11 @@ int main()
 
     if (useCallbacks)
     {
-        rlInitApp(800, 600, "TestWindow", 0, Update, Render, Init, Shutdown);
+        rlInitApp(800, 600, "ReyLib TestWindow", 0, Update, Render, Init, Shutdown);
     }
     else
     {
-        rlInitAppSimple(800, 600, "TestWindow-loop", 0);
+        rlInitAppSimple(800, 600, "ReyLib TestWindow-loop", 0);
         Init();
         while (!rlWantExit())
         {

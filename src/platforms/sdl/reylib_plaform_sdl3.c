@@ -3,6 +3,9 @@
 
 #include "platforms/reylib_platform.h"
 
+void sdlProcessKeyEvents(SDL_Event* event);
+
+
 SDL_AppResult sdlInit(void** appstate, int argc, char* argv[])
 {
     rlPlatformWindowState.GameWindow = SDL_CreateWindow(rlPlatformConfig.WindowName, rlPlatformConfig.Width, rlPlatformConfig.Height, SDL_WINDOW_OPENGL);
@@ -17,6 +20,19 @@ SDL_AppResult sdlInit(void** appstate, int argc, char* argv[])
 
     if (rlPlatformConfig.Init && rlPlatformConfig.Init())
         return SDL_APP_SUCCESS;
+
+    int w, h;
+    if (SDL_GetWindowSize(rlPlatformWindowState.GameWindow, &w, &h))
+    {
+        rlPlatformWindowState.WindowSize.X = (float)w;
+        rlPlatformWindowState.WindowSize.Y = (float)h;
+    }
+
+    if (SDL_GetWindowPosition(rlPlatformWindowState.GameWindow, &w, &h))
+    {
+        rlPlatformWindowState.WindowPosition.X = (float)w;
+        rlPlatformWindowState.WindowPosition.Y = (float)h;
+    }
 
     SDL_GetMouseState(&rlPlatformWindowState.MousePosition.X, &rlPlatformWindowState.MousePosition.Y);
 
@@ -75,6 +91,11 @@ SDL_AppResult sdlEvent(void* appstate, SDL_Event* event)
         rlPlatformWindowState.WindowPosition.X = (float)event->window.data1;
         rlPlatformWindowState.WindowPosition.Y = (float)event->window.data2;
         rlPlatformWindowState.WasWindowMoved = true;
+        break;
+
+    case SDL_EVENT_KEY_DOWN:
+    case SDL_EVENT_KEY_UP:
+        sdlProcessKeyEvents(event);
         break;
 
     default:

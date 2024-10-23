@@ -19,24 +19,23 @@ typedef struct RLPRLVector2Foint2F
 typedef RLVector2F RLPoint2F;
 
 #define RLVector2FZeros  CLITERAL(RLVector2F){ 0, 0 }
-#define RLVector2FOnes  CLITERAL(RLVector2F){ 1, 1 }
+#define RLVector2FOnes   CLITERAL(RLVector2F){ 1, 1 }
 #define RLVector2FUnitX  CLITERAL(RLVector2F){ 1, 0 }
 #define RLVector2FUnitY  CLITERAL(RLVector2F){ 0, 1 }
 
-#define RLPoint2FZeros  CLITERAL(RLPoint2F){ 0, 0 }
+#define RLPoint2FZeros   CLITERAL(RLPoint2F){ 0, 0 }
 
 // 2d Rectangle that uses floats
 typedef struct RLRectangle2F
 {
-    RLPoint2F Origin;
-    RLVector2F Size;
+    float X, Y, Width, Height;
 #if defined(__cplusplus)
     RLRectangle2F(int x, int y, int w, int h)
-        : Origin(x,y), Size(w,h) { }
+        : X(x), Y(y), Width(w), Height(h) { }
 
     RLRectangle2F(float x = 0, float y = 0, float w = 0, float h = 0)
-        : Origin(x, y), Size(w, h) { }
+        : X(x), Y(y), Width(w), Height(h) { }
 #endif
 }RLRectangle2F;
 
-#define RLRectangle2FZeroes  CLITERAL(RLRectangle2F){ {0, 0}, {0, 0} }
+#define RLRectangle2FZeroes  CLITERAL(RLRectangle2F){ 0, 0, 0, 0 }

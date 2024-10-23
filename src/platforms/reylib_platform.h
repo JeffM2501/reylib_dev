@@ -2,6 +2,7 @@
 
 #include "reylib_app.h"
 #include "reylib_geometry_types.h"
+#include "reylib_input_keyboard.h"
 
  // SDL Platform data
 
@@ -44,6 +45,18 @@ typedef struct RLPlaformWindowState
 
 }RLPlaformWindowState;
 extern RLPlaformWindowState rlPlatformWindowState;
+
+#define MAX_KEY_EVENT_SIZE 64
+
+typedef struct RLPlaformKeyboardState
+{
+    bool ThisFrameKeys[RLPK_MAX];
+    bool LastFrameKeys[RLPK_MAX];
+
+    RLKeyboardPhysicalKey KeyEventMap[MAX_KEY_EVENT_SIZE];
+    uint32_t KeyEventMapSize;
+}RLPlaformKeyboardState;
+extern RLPlaformKeyboardState rlPlatformKeyboardState;
 
 SDL_AppResult sdlInit(void** appstate, int argc, char* argv[]);
 

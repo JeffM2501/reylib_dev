@@ -7,6 +7,7 @@ RLCoreData rlCoreData;
 RLPlatformConfig rlPlatformConfig = { 0 };
 RLPlaformWindowState rlPlatformWindowState = { 0 };
 
+void sdlUpdateKeyboardFrame();
 
 static void rlInitCoreData()
 {
@@ -69,6 +70,8 @@ void ClearEndOffFrameData()
 
     rlPlatformWindowState.MouseDelta.X = 0;
     rlPlatformWindowState.MouseDelta.Y = 0;
+
+    sdlUpdateKeyboardFrame();
 }
 
 void rlEndFrame()

@@ -20,5 +20,5 @@ bool rlWasWindowMoved()
 
 bool rlWasWindowResized()
 {
-    rlPlatformWindowState.WasWindowResized;
+    return rlPlatformWindowState.WasWindowResized;
 }
