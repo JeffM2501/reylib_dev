@@ -48,12 +48,18 @@ extern RLPlaformWindowState rlPlatformWindowState;
 
 #define MAX_KEY_EVENT_SIZE 64
 
+typedef struct RLPlaformKeyboardEvent
+{
+    RLKeyboardPhysicalKey Key;
+    bool Down;
+}RLPlaformKeyboardEvent;
+
 typedef struct RLPlaformKeyboardState
 {
     bool ThisFrameKeys[RLPK_MAX];
     bool LastFrameKeys[RLPK_MAX];
 
-    RLKeyboardPhysicalKey KeyEventMap[MAX_KEY_EVENT_SIZE];
+    RLPlaformKeyboardEvent KeyEventMap[MAX_KEY_EVENT_SIZE];
     uint32_t KeyEventMapSize;
 }RLPlaformKeyboardState;
 extern RLPlaformKeyboardState rlPlatformKeyboardState;

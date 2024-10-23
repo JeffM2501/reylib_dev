@@ -621,7 +621,7 @@ extern "C" {            // Prevents name mangling of functions
     RL_API bool rlIsLogicalKeyReleased(RLKeyboardLogicalKey key);
 
     RL_API uint32_t rlGetKeyDownEventListSize();
-    RL_API RLKeyboardPhysicalKey rlGetKeyDownEventListItem(uint32_t index);
+    RL_API RLKeyboardPhysicalKey rlGetKeyDownEventListItem(uint32_t index, bool *isDown);
 
     RL_API RLKeyboardLogicalKey rlGetLogicalKey(RLKeyboardPhysicalKey key);
     RL_API RLKeyboardPhysicalKey rlGetPhysicalKey(RLKeyboardLogicalKey key);

@@ -3,12 +3,14 @@
 
 #include "platforms/reylib_platform.h"
 
+#include <stdio.h>
+
 void sdlProcessKeyEvents(SDL_Event* event);
 
 
 SDL_AppResult sdlInit(void** appstate, int argc, char* argv[])
 {
-    rlPlatformWindowState.GameWindow = SDL_CreateWindow(rlPlatformConfig.WindowName, rlPlatformConfig.Width, rlPlatformConfig.Height, SDL_WINDOW_OPENGL);
+    rlPlatformWindowState.GameWindow = SDL_CreateWindow(rlPlatformConfig.WindowName, rlPlatformConfig.Width, rlPlatformConfig.Height, SDL_WINDOW_VULKAN);
 
     if (!rlPlatformWindowState.GameWindow)
         return SDL_APP_FAILURE;
@@ -39,6 +41,7 @@ SDL_AppResult sdlInit(void** appstate, int argc, char* argv[])
     rlCoreData.LastFrameTime = rlGetTime();
     rlCoreData.DeltaTime = 0;
 
+    printf("Renderer = %s\n", SDL_GetRendererName(rlPlatformWindowState.GameRenderer));
     return SDL_APP_CONTINUE;
 }
 

@@ -14,8 +14,8 @@ bool Init(void)
     Position = (RLPoint2F){ 100,100 };
 
     Image = rlLoadImageFile("../../../../examples/basic/resources/test.png");
-    
     Texture = rlLoadTextureFromImage(Image);
+    rlDestoryImage(Image);
 
     Parots = rlLoadTexture("../../../../examples/basic/resources/parrots.png");
 
@@ -27,7 +27,19 @@ bool Update(void)
     if (rlWantExit())
         return true;
 
-    Position.X += 100 * rlGetFrameTime();
+    float speed = 100;
+
+    if (rlIsPhysicalKeyDown(RLPK_W))
+        Position.Y -= speed * rlGetFrameTime();
+
+    if (rlIsPhysicalKeyDown(RLPK_S))
+        Position.Y += speed * rlGetFrameTime();
+
+    if (rlIsPhysicalKeyDown(RLPK_D))
+        Position.X += speed * rlGetFrameTime();
+
+    if (rlIsPhysicalKeyDown(RLPK_A))
+        Position.X -= speed * rlGetFrameTime();
 
     return false;
 }
@@ -47,6 +59,8 @@ bool Render(void)
 
 bool Shutdown(void)
 {
+    rlDestoryTexture(Parots);
+    rlDestoryTexture(Texture);
     return false;
 }
 
