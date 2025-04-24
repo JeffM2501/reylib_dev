@@ -3,7 +3,7 @@
 #include "reylib_lib_utils.h"
 
 // 2d Vector that uses floats
-typedef struct RLPRLVector2Foint2F
+typedef struct RLVector2F
 {
     float X;
     float Y;
@@ -13,6 +13,11 @@ typedef struct RLPRLVector2Foint2F
 
     RLVector2F(float x = 0, float y = 0)
         : X(x), Y(y) { }
+
+    static constexpr RLVector2F Zeros() { return RLVector2F(0, 0); }
+    static constexpr RLVector2F Ones() { return RLVector2F(1, 1); }
+    static constexpr RLVector2F UnitX() { return RLVector2F(1, 0); }
+    static constexpr RLVector2F UnitY() { return RLVector2F(0, 1); }
 #endif
 }RLVector2F;
 
@@ -39,3 +44,29 @@ typedef struct RLRectangle2F
 }RLRectangle2F;
 
 #define RLRectangle2FZeroes  CLITERAL(RLRectangle2F){ 0, 0, 0, 0 }
+
+
+typedef struct RLTransform2D
+{
+    RLPoint2F Translation;
+    float Rotation;
+    RLVector2F Scale;
+
+#if defined(__cplusplus)
+    RLTransform2D()
+        : Translation(0,0), Rotation(0), Scale(1,1){
+    }
+
+    RLTransform2D(const RLPoint2F& translation)
+        : Translation(translation), Rotation(0), Scale(1, 1) {
+    }
+
+    RLTransform2D(const RLPoint2F& translation, const float& rotation)
+        : Translation(translation), Rotation(rotation), Scale(1, 1) {
+    }
+#endif
+}RLTransform2D;
+
+#if defined(__cplusplus)
+}
+#endif

@@ -48,9 +48,9 @@ bool Render(void)
 {
     rlClearBackgroud(DARKBLUE);
 
-    rlDrawTexture(Parots, Parots.Bounds, (RLRectangle2F){ 150, 150, rlGetWindowSize().X - 150, rlGetWindowSize().Y - 150 }, WHITE);
+    rlDrawTexture(Parots, (RLRectangle2F){ 150, 150, rlGetWindowSize().X - 150, rlGetWindowSize().Y - 150 }, WHITE);
 
-    rlDrawRectangleAtPosition((RLRectangle2F){ 0, 0, 32, 32 }, Position , RED);
+    rlDrawRectangleAtPosition((RLRectangle2F){ -16, -16, 32, 32 }, Position , RED);
 
     rlDrawTextureAtPosition(Texture, RLPoint2FZeros, WHITE);
 
